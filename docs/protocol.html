@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MASampleSize Protocol — E156 Micro-Paper</title>
+<style>
+  :root {
+    --bg: #fafbfc;
+    --surface: #ffffff;
+    --border: #e2e8f0;
+    --text: #1a202c;
+    --text2: #4a5568;
+    --text3: #718096;
+    --accent: #2563eb;
+    --radius: 6px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: Georgia, 'Times New Roman', serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 15px;
+    line-height: 1.75;
+  }
+  .paper {
+    max-width: 780px;
+    margin: 48px auto;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 56px 64px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+  .badge-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+  }
+  .badge {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 3px 9px;
+    border-radius: 20px;
+    background: #dbeafe;
+    color: #1d4ed8;
+  }
+  .badge.green { background: #dcfce7; color: #15803d; }
+  .badge.gray  { background: #f1f5f9; color: #475569; }
+  h1 {
+    font-size: 26px;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--text);
+    margin-bottom: 10px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  .subtitle {
+    font-size: 16px;
+    color: var(--text2);
+    margin-bottom: 20px;
+    font-style: italic;
+  }
+  .authors {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 14px;
+    color: var(--text2);
+    margin-bottom: 6px;
+  }
+  .meta {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 12px;
+    color: var(--text3);
+    margin-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 24px;
+  }
+  h2 {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text);
+    margin: 28px 0 10px;
+    letter-spacing: -0.01em;
+  }
+  p { margin-bottom: 12px; }
+  ul, ol { margin: 10px 0 14px 22px; }
+  li { margin-bottom: 6px; }
+  .abstract {
+    background: #f8faff;
+    border-left: 3px solid var(--accent);
+    padding: 18px 22px;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    margin-bottom: 28px;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+  .abstract strong { color: var(--accent); }
+  .formula-box {
+    background: #f1f5f9;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    font-family: 'Courier New', monospace;
+    font-size: 13px;
+    margin: 12px 0;
+    color: #1e3a5f;
+  }
+  .reg-box {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 13px;
+    margin: 16px 0;
+  }
+  .reg-box strong { color: #15803d; }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 13px;
+    margin: 14px 0;
+  }
+  th {
+    background: #f1f5f9;
+    border: 1px solid var(--border);
+    padding: 8px 12px;
+    text-align: left;
+    font-weight: 700;
+    color: var(--text);
+  }
+  td {
+    border: 1px solid var(--border);
+    padding: 8px 12px;
+    color: var(--text2);
+  }
+  tr:nth-child(even) td { background: #f8fafc; }
+  .footer {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    font-size: 12px;
+    color: var(--text3);
+  }
+  a { color: var(--accent); text-decoration: none; }
+  a:hover { text-decoration: underline; }
+  @media (max-width: 600px) {
+    .paper { padding: 28px 20px; margin: 16px; }
+  }
+  @media print {
+    body { background: white; }
+    .paper { box-shadow: none; border: none; margin: 0; }
+  }
+</style>
+</head>
+<body>
+<article class="paper">
+
+  <div class="badge-row">
+    <span class="badge">Protocol</span>
+    <span class="badge green">E156 Micro-Paper</span>
+    <span class="badge gray">Open Access</span>
+    <span class="badge gray">MSS-2026-001</span>
+  </div>
+
+  <h1>MASampleSize: A Browser-Based Prospective Meta-Analysis Sample Size Calculator</h1>
+  <div class="subtitle">Protocol for a Single-File Interactive Tool for Required Information Size and Study Planning</div>
+
+  <div class="authors">Mahmood Alhusseini</div>
+  <div class="meta">
+    Submitted: 2026-03-31 &nbsp;|&nbsp; Registration: MSS-2026-001 &nbsp;|&nbsp;
+    License: MIT &nbsp;|&nbsp; Repository: <a href="https://github.com/mahmood726-cyber/ma-sample-size">github.com/mahmood726-cyber/ma-sample-size</a>
+  </div>
+
+  <div class="abstract">
+    <strong>Background.</strong> Prospective meta-analysis planning requires answering a question that existing tools do not address directly: how many studies—and how many patients—are needed before a pooled estimate can be considered conclusive? Trial Sequential Analysis (TSA) addresses the retrospective question (is existing evidence sufficient?), but no browser-based tool answers the prospective planning question for researchers designing cumulative synthesis strategies.
+    <br><br>
+    <strong>Objectives.</strong> To develop and validate a free, single-file, browser-native tool that calculates Required Information Size (RIS), estimates the number of studies needed to achieve target power, renders real-time power curves, and assesses adequacy of existing evidence against the RIS.
+    <br><br>
+    <strong>Methods.</strong> Single HTML file implementing binary and continuous sample-size formulae, D&#178; heterogeneity adjustment, Abramowitz-Stegun normal quantile approximation, Canvas-based power curves, and localStorage state persistence.
+    <br><br>
+    <strong>Expected Outcomes.</strong> RIS, studies-needed estimate, four interactive power/MDE curves, and a traffic-light adequacy assessment against any pre-existing evidence base.
+  </div>
+
+  <h2>1. Background and Rationale</h2>
+  <p>
+    The cumulative evidence base in clinical medicine grows continuously. Systematic reviewers and prospective meta-analysis consortia must plan evidence synthesis prospectively: specifying effect size assumptions, heterogeneity expectations, and information requirements before data collection begins. Without such planning, meta-analyses risk underpowering (too few studies to detect a true effect) or are conducted sequentially without pre-specified stopping rules, inflating Type-I error.
+  </p>
+  <p>
+    The Required Information Size (RIS) concept—analogous to the sample size in an individual RCT but applied to pooled evidence—provides a principled framework. The TSA Pro tool (available at <a href="https://github.com/mahmood726-cyber/tsa-pro">github.com/mahmood726-cyber/tsa-pro</a>) addresses retrospective TSA with alpha-spending functions and futility boundaries. MASampleSize addresses the complementary prospective question, completing the planning-to-assessment lifecycle.
+  </p>
+  <p>
+    No existing freely available browser tool combines: (1) binary and continuous RIS calculation, (2) D&#178; heterogeneity inflation, (3) studies-needed from average study size, (4) interactive power curves across k-studies and total N dimensions, and (5) existing-evidence adequacy assessment. This gap motivates the present tool.
+  </p>
+
+  <h2>2. Objectives</h2>
+  <ol>
+    <li>Calculate the Required Information Size (RIS) for binary and continuous outcomes under user-specified design parameters.</li>
+    <li>Estimate the number of studies needed to achieve RIS given an expected average study size.</li>
+    <li>Render real-time interactive power curves across number of studies (k) and total sample size (N).</li>
+    <li>Render minimum detectable effect (MDE) as a function of k and RIS sensitivity to I&#178;.</li>
+    <li>Assess existing evidence (from an ongoing review) against the computed RIS and report a traffic-light adequacy rating.</li>
+    <li>Export results as a JSON summary for audit trails.</li>
+  </ol>
+
+  <h2>3. Methods</h2>
+
+  <h2>3.1 Core Formulae</h2>
+  <p><strong>Binary outcome (two-arm, equal allocation).</strong> Per-arm sample size from two-proportion z-test:</p>
+  <div class="formula-box">n = (z&#x03B1;/2 + z&#x03B2;)&#178; &times; [p&#x2080;(1&minus;p&#x2080;) + p&#x2081;(1&minus;p&#x2081;)] / (p&#x2080;&minus;p&#x2081;)&#178;</div>
+  <p>Total N (both arms) = 2n. Relative Risk = p&#x2081;/p&#x2080;; Risk Difference = p&#x2081;&minus;p&#x2080;.</p>
+
+  <p><strong>Continuous outcome (two-arm, equal allocation).</strong> Two-sample t-test approximation:</p>
+  <div class="formula-box">n = 2(z&#x03B1;/2 + z&#x03B2;)&#178; &times; &#x03C3;&#178; / &#x03B4;&#178;</div>
+  <p>Cohen's d = &#x03B4;/&#x03C3;. Conventional thresholds: small=0.2, medium=0.5, large=0.8.</p>
+
+  <p><strong>D&#178; heterogeneity inflation.</strong> The diversity factor D&#178; = I&#178;/(1&minus;I&#178;) transforms the RIS:</p>
+  <div class="formula-box">RIS = N&#x2080; &times; (1 + D&#178;) &nbsp;&nbsp;where D&#178; = I&#178;/(1&minus;I&#178;)</div>
+  <p>This formula follows Wetterslev et al. (2009) and is the same adjustment used in TSA software. At I&#178;=0, RIS equals the unadjusted N; at I&#178;=50%, RIS doubles; at I&#178;=75%, RIS quadruples.</p>
+
+  <p><strong>Studies needed.</strong> k = ceil(RIS / (2 &times; avgStudySize)), where avgStudySize is the expected per-arm size of contributing studies.</p>
+
+  <p><strong>Power function.</strong> Given total accrued N and effect size &#x03B4; (standardised):</p>
+  <div class="formula-box">Power = &#x03A6;(&#x221A;(N/hetAdj) &times; &#x03B4;/&#x221A;2 &minus; z&#x03B1;/2)</div>
+  <p>where hetAdj = 1 + D&#178; and &#x03A6; is the standard normal CDF.</p>
+
+  <p><strong>Minimum Detectable Effect.</strong> The MDE at a given N (80% power) is:</p>
+  <div class="formula-box">MDE = &#x221A;(2(z&#x03B1;/2 + z&#x03B2;)&#178; / (N/hetAdj))</div>
+
+  <h2>3.2 Normal Distribution Approximations</h2>
+  <p>
+    The standard normal CDF is approximated using the Abramowitz-Stegun error-function series (Handbook of Mathematical Functions, formula 7.1.26), which achieves maximum absolute error &lt;1.5&times;10&#x207B;&#x2077; across the entire real line. The inverse CDF (percent-point function) uses the rational approximation by Peter Acklam (2000), achieving maximum absolute error &lt;3&times;10&#x207B;&#x2079; in the central region.
+  </p>
+
+  <h2>3.3 Implementation Architecture</h2>
+  <p>The tool is a single self-contained HTML file (1,825 lines, ~66 KB) requiring no server, no build step, and no external dependencies. Key design decisions:</p>
+  <ul>
+    <li><strong>Single file</strong>: embeds all CSS, JS, and markup inline for offline use and easy distribution.</li>
+    <li><strong>Canvas charts</strong>: four power/MDE curves rendered natively via the HTML5 Canvas API with interactive slider controls and tooltip overlay.</li>
+    <li><strong>localStorage persistence</strong>: state is saved to <code>masscalc_v1_state</code> on every input event and restored on page load.</li>
+    <li><strong>Dark mode</strong>: CSS custom properties toggle between light and dark themes; preference saved to localStorage.</li>
+    <li><strong>Four tabs</strong>: Study Parameters, Power Curves, Existing Evidence, Export.</li>
+    <li><strong>Three example presets</strong>: statin mortality (green/adequate), novel anticoagulant bleeding (red/inadequate), exercise for depression (yellow/borderline).</li>
+  </ul>
+
+  <h2>3.4 Existing Evidence Assessment</h2>
+  <p>
+    The Existing Evidence tab accepts current pooled data from an ongoing review: number of studies (k), total N, pooled effect size, I&#178;, and 95% CI. The tool then computes:
+  </p>
+  <ul>
+    <li>Current power against the user-specified design effect.</li>
+    <li>Fraction of RIS accrued (N/RIS &times; 100%).</li>
+    <li>Qualitative traffic-light rating: Green (N &ge; RIS and CI excludes null), Yellow (N &ge; 75% RIS), Red (N &lt; 75% RIS).</li>
+    <li>Accrual progress bar.</li>
+    <li>Remaining studies needed to reach RIS.</li>
+  </ul>
+
+  <h2>4. Primary Outcomes</h2>
+  <table>
+    <tr><th>Outcome</th><th>Definition</th><th>Format</th></tr>
+    <tr><td>Required Information Size (RIS)</td><td>Total patients needed across all meta-analysis arms, adjusted for heterogeneity</td><td>Integer (ceiling)</td></tr>
+    <tr><td>Studies needed (k)</td><td>ceil(RIS / (2 &times; avgStudySize))</td><td>Integer</td></tr>
+    <tr><td>Per-arm sample size</td><td>Unadjusted N per arm before heterogeneity inflation</td><td>Integer</td></tr>
+    <tr><td>Power at current N</td><td>Statistical power given accrued evidence</td><td>Percentage (0&#x2013;100%)</td></tr>
+    <tr><td>Adequacy rating</td><td>Traffic-light assessment (Green/Yellow/Red)</td><td>Categorical</td></tr>
+    <tr><td>Power curve (k)</td><td>Power as a function of number of studies (1&#x2013;40)</td><td>Canvas chart</td></tr>
+    <tr><td>Power curve (N)</td><td>Power as a function of total sample size</td><td>Canvas chart</td></tr>
+    <tr><td>MDE curve</td><td>Minimum detectable effect vs. k at 80% power</td><td>Canvas chart</td></tr>
+    <tr><td>RIS vs I&#178;</td><td>Sensitivity of RIS to heterogeneity (0&#x2013;90%)</td><td>Canvas chart</td></tr>
+  </table>
+
+  <h2>5. Validation Plan</h2>
+  <p>Numerical outputs will be cross-validated against:</p>
+  <ul>
+    <li>R <code>pwr</code> package (<code>pwr.2p.test</code>, <code>pwr.t.test</code>) for binary and continuous sample sizes.</li>
+    <li>Manual calculation with published TSA software reference values (Wetterslev et al. 2009, Thorlund et al. 2011).</li>
+    <li>Tolerance threshold: |relative error| &lt; 0.1% for all reference values.</li>
+  </ul>
+  <p>Safety checks will verify: div balance, script tag integrity, function name uniqueness, element ID uniqueness, and event listener cleanup (per html-apps.md rules).</p>
+
+  <h2>6. Ethical Considerations</h2>
+  <p>
+    This tool processes no personal or clinical data. All computation is performed locally in the user's browser. No data is transmitted to any server. The tool is released under the MIT License to maximise open access.
+  </p>
+
+  <h2>7. Timeline</h2>
+  <table>
+    <tr><th>Milestone</th><th>Target Date</th></tr>
+    <tr><td>Tool implementation complete</td><td>2026-03-31</td></tr>
+    <tr><td>Safety checks passed</td><td>2026-03-31</td></tr>
+    <tr><td>GitHub Pages deployment</td><td>2026-03-31</td></tr>
+    <tr><td>Results paper (E156)</td><td>2026-03-31</td></tr>
+    <tr><td>Protocol registration</td><td>MSS-2026-001</td></tr>
+  </table>
+
+  <h2>8. Registration</h2>
+  <div class="reg-box">
+    <strong>Registration ID:</strong> MSS-2026-001<br>
+    <strong>Date:</strong> 2026-03-31<br>
+    <strong>Registered by:</strong> Mahmood Alhusseini<br>
+    <strong>Repository:</strong> <a href="https://github.com/mahmood726-cyber/ma-sample-size">https://github.com/mahmood726-cyber/ma-sample-size</a><br>
+    <strong>Live tool:</strong> <a href="https://mahmood726-cyber.github.io/ma-sample-size/">https://mahmood726-cyber.github.io/ma-sample-size/</a>
+  </div>
+
+  <h2>9. Competing Interests</h2>
+  <p>None declared.</p>
+
+  <h2>10. References</h2>
+  <ol>
+    <li>Wetterslev J, Thorlund K, Brok J, Gluud C. Trial sequential analysis may establish when firm evidence is reached in cumulative meta-analysis. <em>J Clin Epidemiol.</em> 2008;61(1):64-75.</li>
+    <li>Thorlund K, Engstrøm J, Wetterslev J, Brok J, Imberger G, Gluud C. User manual for Trial Sequential Analysis (TSA). Copenhagen Trial Unit, 2011.</li>
+    <li>Abramowitz M, Stegun IA. <em>Handbook of Mathematical Functions.</em> National Bureau of Standards; 1964. Formula 7.1.26.</li>
+    <li>Acklam P. An algorithm for computing the inverse normal cumulative distribution function. 2000. Available at: <a href="https://web.archive.org/web/20151030215612/http://home.online.no/~pjacklam/notes/invnorm/">https://web.archive.org/web/20151030215612/http://home.online.no/~pjacklam/notes/invnorm/</a></li>
+    <li>Cohen J. <em>Statistical Power Analysis for the Behavioral Sciences.</em> 2nd ed. Lawrence Erlbaum Associates; 1988.</li>
+  </ol>
+
+  <div class="footer">
+    E156 Micro-Paper &mdash; Protocol &mdash; MSS-2026-001 &mdash; 2026-03-31 &mdash; MIT License<br>
+    MASampleSize v1.0 &mdash; <a href="https://github.com/mahmood726-cyber/ma-sample-size">github.com/mahmood726-cyber/ma-sample-size</a>
+  </div>
+
+</article>
+</body>
+</html>
