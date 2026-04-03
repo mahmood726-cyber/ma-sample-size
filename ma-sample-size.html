@@ -917,6 +917,7 @@ function normalPPF(p) {
 }
 
 function sampleSizeBinary(p0, p1, alpha, power) {
+  if (p0 === p1) return Infinity;
   var za = normalPPF(1 - alpha / 2);
   var zb = normalPPF(power);
   var n = (za + zb) * (za + zb) * (p0 * (1 - p0) + p1 * (1 - p1)) / ((p0 - p1) * (p0 - p1));
@@ -949,6 +950,7 @@ function computePower(N, effectSize, i2Frac, alpha) {
 }
 
 function computeRIS(effectSize, i2Frac, alpha, power) {
+  if (!effectSize || effectSize === 0) return Infinity;
   var za = normalPPF(1 - alpha / 2);
   var zb = normalPPF(power);
   var hetAdj = heterogeneityAdjustment(i2Frac);
@@ -1822,4 +1824,5 @@ function init() {
 setTimeout(init, 50);
 </script>
 </body>
+</html>
 </html>
