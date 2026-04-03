@@ -499,7 +499,7 @@ canvas {
   </div>
   <div class="header-right">
     <span class="badge">v1.0</span>
-    <button class="theme-btn" id="themeToggle" onclick="toggleTheme()">Dark Mode</button>
+    <button class="theme-btn" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle dark mode">Dark Mode</button>
   </div>
 </header>
 
@@ -538,11 +538,11 @@ canvas {
             <div class="row-inputs">
               <div class="form-group">
                 <label class="form-label">Control Event Rate <span class="hint">(p₀)</span></label>
-                <input type="number" class="form-input" id="p0" value="0.10" step="0.01" min="0.001" max="0.999" oninput="saveState()">
+                <input type="number" class="form-input" id="p0" value="0.10" step="0.01" min="0.001" max="0.999" oninput="debouncedSaveState()">
               </div>
               <div class="form-group">
                 <label class="form-label">Treatment Event Rate <span class="hint">(p₁)</span></label>
-                <input type="number" class="form-input" id="p1" value="0.07" step="0.01" min="0.001" max="0.999" oninput="saveState()">
+                <input type="number" class="form-input" id="p1" value="0.07" step="0.01" min="0.001" max="0.999" oninput="debouncedSaveState()">
               </div>
             </div>
             <div class="formula-note">Relative Risk = p₁/p₀. Risk Difference = p₁ − p₀. Enter expected event rates in each arm.</div>
@@ -553,11 +553,11 @@ canvas {
             <div class="row-inputs">
               <div class="form-group">
                 <label class="form-label">Mean Difference <span class="hint">(δ)</span></label>
-                <input type="number" class="form-input" id="meanDiff" value="0.5" step="0.1" oninput="saveState()">
+                <input type="number" class="form-input" id="meanDiff" value="0.5" step="0.1" oninput="debouncedSaveState()">
               </div>
               <div class="form-group">
                 <label class="form-label">Pooled SD <span class="hint">(σ)</span></label>
-                <input type="number" class="form-input" id="pooledSD" value="1.0" step="0.1" min="0.01" oninput="saveState()">
+                <input type="number" class="form-input" id="pooledSD" value="1.0" step="0.1" min="0.01" oninput="debouncedSaveState()">
               </div>
             </div>
             <div class="formula-note">Cohen's d = δ/σ. For 'small'=0.2, 'medium'=0.5, 'large'=0.8 effect sizes.</div>
@@ -570,7 +570,7 @@ canvas {
           <div class="row-inputs">
             <div class="form-group">
               <label class="form-label">Alpha (α) <span class="hint">two-sided</span></label>
-              <select class="form-select" id="alphaLevel" onchange="saveState()">
+              <select class="form-select" id="alphaLevel" onchange="debouncedSaveState()">
                 <option value="0.05" selected>0.05</option>
                 <option value="0.025">0.025 (Bonferroni)</option>
                 <option value="0.01">0.01 (strict)</option>
@@ -579,7 +579,7 @@ canvas {
             </div>
             <div class="form-group">
               <label class="form-label">Target Power (1−β)</label>
-              <select class="form-select" id="powerTarget" onchange="saveState()">
+              <select class="form-select" id="powerTarget" onchange="debouncedSaveState()">
                 <option value="0.80" selected>80%</option>
                 <option value="0.85">85%</option>
                 <option value="0.90">90%</option>
@@ -609,7 +609,7 @@ canvas {
 
           <div class="form-group">
             <label class="form-label">Average Study Size <span class="hint">(participants per arm)</span></label>
-            <input type="number" class="form-input" id="avgStudySize" value="150" step="10" min="10" oninput="saveState()">
+            <input type="number" class="form-input" id="avgStudySize" value="150" step="10" min="10" oninput="debouncedSaveState()">
           </div>
 
           <div style="margin-top:18px;">
@@ -748,37 +748,37 @@ canvas {
           <div class="row-inputs">
             <div class="form-group">
               <label class="form-label">Number of Studies (k)</label>
-              <input type="number" class="form-input" id="extK" value="5" min="1" oninput="saveState()">
+              <input type="number" class="form-input" id="extK" value="5" min="1" oninput="debouncedSaveState()">
             </div>
             <div class="form-group">
               <label class="form-label">Total Participants (N)</label>
-              <input type="number" class="form-input" id="extN" value="1200" min="1" oninput="saveState()">
+              <input type="number" class="form-input" id="extN" value="1200" min="1" oninput="debouncedSaveState()">
             </div>
           </div>
           <div class="row-inputs">
             <div class="form-group">
               <label class="form-label">Observed Effect (Cohen's d or RD)</label>
-              <input type="number" class="form-input" id="extEffect" value="0.30" step="0.01" oninput="saveState()">
+              <input type="number" class="form-input" id="extEffect" value="0.30" step="0.01" oninput="debouncedSaveState()">
             </div>
             <div class="form-group">
               <label class="form-label">Observed I²</label>
-              <input type="number" class="form-input" id="extI2" value="40" min="0" max="99" oninput="saveState()">
+              <input type="number" class="form-input" id="extI2" value="40" min="0" max="99" oninput="debouncedSaveState()">
             </div>
           </div>
           <div class="row-inputs">
             <div class="form-group">
               <label class="form-label">Lower 95% CI</label>
-              <input type="number" class="form-input" id="extLCI" value="0.05" step="0.01" oninput="saveState()">
+              <input type="number" class="form-input" id="extLCI" value="0.05" step="0.01" oninput="debouncedSaveState()">
             </div>
             <div class="form-group">
               <label class="form-label">Upper 95% CI</label>
-              <input type="number" class="form-input" id="extUCI" value="0.55" step="0.01" oninput="saveState()">
+              <input type="number" class="form-input" id="extUCI" value="0.55" step="0.01" oninput="debouncedSaveState()">
             </div>
           </div>
           <div class="row-inputs">
             <div class="form-group">
               <label class="form-label">Target Alpha (α)</label>
-              <select class="form-select" id="extAlpha" onchange="saveState()">
+              <select class="form-select" id="extAlpha" onchange="debouncedSaveState()">
                 <option value="0.05" selected>0.05</option>
                 <option value="0.025">0.025</option>
                 <option value="0.01">0.01</option>
@@ -786,7 +786,7 @@ canvas {
             </div>
             <div class="form-group">
               <label class="form-label">Avg Study Size (per arm)</label>
-              <input type="number" class="form-input" id="extAvgN" value="120" min="10" oninput="saveState()">
+              <input type="number" class="form-input" id="extAvgN" value="120" min="10" oninput="debouncedSaveState()">
             </div>
           </div>
           <button class="btn btn-primary" onclick="runExistingCheck()" style="width:100%; margin-top:8px;">
@@ -982,6 +982,12 @@ var appState = {
   lastResult: null,
   lastExistingResult: null
 };
+
+var _saveTimer = null;
+function debouncedSaveState() {
+  if (_saveTimer) clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(saveState, 300);
+}
 
 function saveState() {
   var s = {
@@ -1672,6 +1678,9 @@ function setupChartTooltip(canvasId, xLabel, yLabel, getData) {
   canvas.addEventListener('mouseleave', function() {
     tooltip.style.display = 'none';
   });
+  window.addEventListener('scroll', function() {
+    tooltip.style.display = 'none';
+  }, { passive: true });
 }
 
 // =====================================================================
@@ -1748,7 +1757,7 @@ function downloadChartPNG() {
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
-  URL.revokeObjectURL(url);
+  // toDataURL returns a data: URI, not a blob URL — no revokeObjectURL needed
 }
 
 function downloadHTMLReport() {
@@ -1774,7 +1783,7 @@ function downloadHTMLReport() {
   document.body.appendChild(a);
   a.click();
   document.body.removeChild(a);
-  setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
+  setTimeout(function() { URL.revokeObjectURL(url); }, 5000);
 }
 
 // =====================================================================
@@ -1824,5 +1833,4 @@ function init() {
 setTimeout(init, 50);
 </script>
 </body>
-</html>
 </html>

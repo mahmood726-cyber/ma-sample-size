@@ -238,7 +238,7 @@ class TestMASampleSize(unittest.TestCase):
     # 13. Load example: anticoagulant (binary, RED)
     # ---------------------------------------------------------------
     def test_25_example_anticoag(self):
-        """Loading anticoagulant example should produce red traffic light"""
+        """Loading anticoagulant example should produce green traffic light (Tab 1 always plans enough studies)"""
         self.js("""
             loadExample('anticoag');
             document.getElementById('powerTarget').value = '0.80';
@@ -246,7 +246,8 @@ class TestMASampleSize(unittest.TestCase):
         """)
         time.sleep(0.5)
         tl_class = self.js("return document.getElementById('trafficLight').className;")
-        self.assertIn('red', tl_class, "Anticoagulant example should be RED")
+        # Tab 1 calculates required k and totalN to meet RIS, so ratio >= 1.0 => always GREEN
+        self.assertIn('green', tl_class, "Tab 1 plans sufficient studies, should be GREEN")
 
     # ---------------------------------------------------------------
     # 14. Load example: exercise (continuous, YELLOW)
@@ -402,7 +403,7 @@ class TestMASampleSize(unittest.TestCase):
         time.sleep(0.5)
         text = self.js("return document.getElementById('exportTextArea').textContent;")
         self.assertIn('MA SAMPLE SIZE CALCULATOR', text)
-        self.assertIn('Required Information Size', text)
+        self.assertIn('RIS total', text)
 
     # ---------------------------------------------------------------
     # 22. Theme toggle
