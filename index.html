@@ -1,0 +1,1836 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MA Sample Size Calculator — Prospective Meta-Analysis Planning</title>
+<style>
+:root {
+  --bg: #f5f7fa;
+  --surface: #ffffff;
+  --surface2: #f0f3f8;
+  --border: #d0d7e3;
+  --text: #1a2332;
+  --text2: #4a5568;
+  --text3: #718096;
+  --accent: #2563eb;
+  --accent-light: #dbeafe;
+  --green: #16a34a;
+  --green-light: #dcfce7;
+  --yellow: #ca8a04;
+  --yellow-light: #fef9c3;
+  --red: #dc2626;
+  --red-light: #fee2e2;
+  --radius: 8px;
+  --shadow: 0 1px 4px rgba(0,0,0,0.08);
+  --shadow-md: 0 4px 16px rgba(0,0,0,0.10);
+}
+[data-theme="dark"] {
+  --bg: #0f1520;
+  --surface: #1a2336;
+  --surface2: #1e2b40;
+  --border: #2d3f5a;
+  --text: #e8edf5;
+  --text2: #a0aec0;
+  --text3: #6b7fa0;
+  --accent: #3b82f6;
+  --accent-light: #1e3a6e;
+  --green: #22c55e;
+  --green-light: #14532d;
+  --yellow: #eab308;
+  --yellow-light: #422006;
+  --red: #ef4444;
+  --red-light: #450a0a;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 14px;
+  line-height: 1.5;
+}
+.app-header {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--shadow);
+}
+.app-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--text);
+}
+.app-subtitle {
+  font-size: 12px;
+  color: var(--text3);
+  margin-top: 1px;
+}
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.theme-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 5px 12px;
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--text2);
+  transition: all 0.2s;
+}
+.theme-btn:hover { background: var(--border); }
+.badge {
+  background: var(--accent-light);
+  color: var(--accent);
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 20px;
+}
+.tabs-bar {
+  display: flex;
+  gap: 0;
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 0 24px;
+  overflow-x: auto;
+}
+.tab-btn {
+  padding: 12px 20px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text3);
+  border-bottom: 2px solid transparent;
+  white-space: nowrap;
+  transition: all 0.15s;
+}
+.tab-btn:hover { color: var(--text); }
+.tab-btn.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+  font-weight: 600;
+}
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+.main-content {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 24px;
+}
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+.grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+}
+@media (max-width: 768px) {
+  .grid-2, .grid-3 { grid-template-columns: 1fr; }
+  .main-content { padding: 16px; }
+}
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+.card-title {
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--text3);
+  margin-bottom: 16px;
+}
+.form-group { margin-bottom: 14px; }
+.form-label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text2);
+  margin-bottom: 5px;
+}
+.form-label .hint {
+  font-weight: 400;
+  color: var(--text3);
+  font-size: 11px;
+}
+.form-input, .form-select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 13px;
+  transition: border-color 0.15s;
+}
+.form-input:focus, .form-select:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-light);
+}
+.slider-group { margin-bottom: 14px; }
+.slider-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+input[type="range"] {
+  flex: 1;
+  height: 4px;
+  accent-color: var(--accent);
+  cursor: pointer;
+}
+.slider-val {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--accent);
+  min-width: 40px;
+  text-align: right;
+}
+.slider-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 10px;
+  color: var(--text3);
+  margin-top: 2px;
+}
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 9px 20px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s;
+}
+.btn-primary {
+  background: var(--accent);
+  color: #fff;
+}
+.btn-primary:hover { filter: brightness(1.1); }
+.btn-secondary {
+  background: var(--surface2);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.btn-secondary:hover { background: var(--border); }
+.btn-sm { padding: 6px 14px; font-size: 12px; }
+.results-box {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 18px;
+}
+.results-box.green { background: var(--green-light); border-color: var(--green); }
+.results-box.yellow { background: var(--yellow-light); border-color: var(--yellow); }
+.results-box.red { background: var(--red-light); border-color: var(--red); }
+.metric-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+.metric-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 12px;
+  text-align: center;
+}
+.metric-value {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1.1;
+}
+.metric-unit {
+  font-size: 12px;
+  color: var(--text3);
+  margin-top: 2px;
+}
+.metric-label {
+  font-size: 11px;
+  color: var(--text2);
+  margin-top: 4px;
+  font-weight: 600;
+}
+.traffic-light {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 16px;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 14px;
+}
+.traffic-light.green { background: var(--green-light); color: var(--green); }
+.traffic-light.yellow { background: var(--yellow-light); color: var(--yellow); }
+.traffic-light.red { background: var(--red-light); color: var(--red); }
+.tl-icon { font-size: 20px; }
+.section-sep {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 20px 0;
+}
+.info-text {
+  font-size: 12px;
+  color: var(--text3);
+  margin-top: 8px;
+  line-height: 1.6;
+}
+.example-btns {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.example-btn {
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  background: var(--surface2);
+  color: var(--text2);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.example-btn:hover {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+.chart-container {
+  position: relative;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px;
+}
+.chart-title {
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text2);
+  margin-bottom: 12px;
+}
+canvas {
+  display: block;
+  width: 100%;
+  cursor: crosshair;
+}
+.tooltip-box {
+  position: fixed;
+  background: var(--text);
+  color: var(--bg);
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  pointer-events: none;
+  z-index: 9999;
+  display: none;
+  white-space: nowrap;
+}
+.export-area {
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 14px;
+  min-height: 200px;
+  white-space: pre-wrap;
+  color: var(--text);
+  max-height: 400px;
+  overflow-y: auto;
+}
+.het-zones {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+.het-zone {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+.het-zone.low { background: #dcfce7; color: #166534; }
+.het-zone.mod { background: #fef9c3; color: #92400e; }
+.het-zone.high { background: #fed7aa; color: #9a3412; }
+.het-zone.vhigh { background: #fee2e2; color: #991b1b; }
+[data-theme="dark"] .het-zone.low { background: #14532d; color: #86efac; }
+[data-theme="dark"] .het-zone.mod { background: #422006; color: #fde68a; }
+[data-theme="dark"] .het-zone.high { background: #431407; color: #fdba74; }
+[data-theme="dark"] .het-zone.vhigh { background: #450a0a; color: #fca5a5; }
+.formula-note {
+  font-size: 11px;
+  color: var(--text3);
+  font-style: italic;
+  margin-top: 6px;
+  padding: 8px;
+  background: var(--surface2);
+  border-radius: 4px;
+  border-left: 3px solid var(--accent);
+}
+.row-inputs {
+  display: flex;
+  gap: 10px;
+}
+.row-inputs .form-group { flex: 1; }
+.outcome-toggle {
+  display: flex;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+  margin-bottom: 16px;
+}
+.outcome-btn {
+  flex: 1;
+  padding: 9px;
+  text-align: center;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  border: none;
+  background: var(--surface2);
+  color: var(--text2);
+  transition: all 0.15s;
+}
+.outcome-btn.active {
+  background: var(--accent);
+  color: #fff;
+}
+.hidden { display: none; }
+.power-bar-wrap {
+  background: var(--border);
+  border-radius: 20px;
+  height: 12px;
+  overflow: hidden;
+  margin: 8px 0;
+}
+.power-bar {
+  height: 100%;
+  border-radius: 20px;
+  transition: width 0.4s ease;
+}
+.chart-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding: 12px;
+  background: var(--surface2);
+  border-radius: 6px;
+  border: 1px solid var(--border);
+}
+.chart-ctrl-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+}
+.chart-ctrl-group label { color: var(--text2); font-weight: 600; }
+.chart-ctrl-group input[type="range"] { width: 100px; }
+.chart-ctrl-group .slider-val { min-width: 36px; }
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+@media (max-width: 768px) {
+  .charts-grid { grid-template-columns: 1fr; }
+}
+@media print {
+  .tabs-bar, .theme-btn, .btn, .example-btns, .chart-controls { display: none !important; }
+  .tab-panel { display: block !important; }
+  .main-content { max-width: 100%; padding: 8px; }
+  body { background: white; color: black; }
+}
+.divider-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text3);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin: 16px 0 12px;
+}
+.divider-label::before, .divider-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border);
+}
+</style>
+</head>
+<body data-theme="light">
+
+<div class="tooltip-box" id="globalTooltip"></div>
+
+<header class="app-header">
+  <div>
+    <div class="app-title">MA Sample Size Calculator</div>
+    <div class="app-subtitle">Prospective Meta-Analysis Planning — Required Information Size &amp; Power</div>
+  </div>
+  <div class="header-right">
+    <span class="badge">v1.0</span>
+    <button class="theme-btn" id="themeToggle" onclick="toggleTheme()" aria-label="Toggle dark mode">Dark Mode</button>
+  </div>
+</header>
+
+<nav class="tabs-bar">
+  <button class="tab-btn active" onclick="switchTab('params')" data-tab="params">Study Parameters</button>
+  <button class="tab-btn" onclick="switchTab('curves')" data-tab="curves">Power Curves</button>
+  <button class="tab-btn" onclick="switchTab('existing')" data-tab="existing">Existing Evidence</button>
+  <button class="tab-btn" onclick="switchTab('export')" data-tab="export">Export</button>
+</nav>
+
+<!-- ===== TAB 1: STUDY PARAMETERS ===== -->
+<div class="tab-panel active" id="tab-params">
+  <div class="main-content">
+
+    <div style="margin-bottom:16px;">
+      <div class="card-title" style="margin-bottom:8px;">Quick Examples</div>
+      <div class="example-btns">
+        <button class="example-btn" onclick="loadExample('statin')">Statin Mortality (Green)</button>
+        <button class="example-btn" onclick="loadExample('anticoag')">Novel Anticoagulant Bleeding (Red)</button>
+        <button class="example-btn" onclick="loadExample('exercise')">Exercise for Depression (Yellow)</button>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <!-- LEFT: INPUT PANEL -->
+      <div>
+        <div class="card">
+          <div class="card-title">Outcome Type</div>
+          <div class="outcome-toggle">
+            <button class="outcome-btn active" id="btnBinary" onclick="setOutcome('binary')">Binary Outcome</button>
+            <button class="outcome-btn" id="btnContinuous" onclick="setOutcome('continuous')">Continuous Outcome</button>
+          </div>
+
+          <!-- Binary inputs -->
+          <div id="binaryInputs">
+            <div class="row-inputs">
+              <div class="form-group">
+                <label class="form-label">Control Event Rate <span class="hint">(p₀)</span></label>
+                <input type="number" class="form-input" id="p0" value="0.10" step="0.01" min="0.001" max="0.999" oninput="debouncedSaveState()">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Treatment Event Rate <span class="hint">(p₁)</span></label>
+                <input type="number" class="form-input" id="p1" value="0.07" step="0.01" min="0.001" max="0.999" oninput="debouncedSaveState()">
+              </div>
+            </div>
+            <div class="formula-note">Relative Risk = p₁/p₀. Risk Difference = p₁ − p₀. Enter expected event rates in each arm.</div>
+          </div>
+
+          <!-- Continuous inputs -->
+          <div id="continuousInputs" class="hidden">
+            <div class="row-inputs">
+              <div class="form-group">
+                <label class="form-label">Mean Difference <span class="hint">(δ)</span></label>
+                <input type="number" class="form-input" id="meanDiff" value="0.5" step="0.1" oninput="debouncedSaveState()">
+              </div>
+              <div class="form-group">
+                <label class="form-label">Pooled SD <span class="hint">(σ)</span></label>
+                <input type="number" class="form-input" id="pooledSD" value="1.0" step="0.1" min="0.01" oninput="debouncedSaveState()">
+              </div>
+            </div>
+            <div class="formula-note">Cohen's d = δ/σ. For 'small'=0.2, 'medium'=0.5, 'large'=0.8 effect sizes.</div>
+          </div>
+
+          <hr class="section-sep">
+
+          <div class="divider-label">Design Parameters</div>
+
+          <div class="row-inputs">
+            <div class="form-group">
+              <label class="form-label">Alpha (α) <span class="hint">two-sided</span></label>
+              <select class="form-select" id="alphaLevel" onchange="debouncedSaveState()">
+                <option value="0.05" selected>0.05</option>
+                <option value="0.025">0.025 (Bonferroni)</option>
+                <option value="0.01">0.01 (strict)</option>
+                <option value="0.1">0.10 (exploratory)</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Target Power (1−β)</label>
+              <select class="form-select" id="powerTarget" onchange="debouncedSaveState()">
+                <option value="0.80" selected>80%</option>
+                <option value="0.85">85%</option>
+                <option value="0.90">90%</option>
+                <option value="0.95">95%</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="slider-group">
+            <label class="form-label">Expected I² (Heterogeneity)
+              <span class="hint">— inflates required sample size</span>
+            </label>
+            <div class="slider-row">
+              <input type="range" id="i2Slider" min="0" max="90" step="5" value="25" oninput="updateI2Display(); saveState()">
+              <span class="slider-val" id="i2Val">25%</span>
+            </div>
+            <div class="slider-labels">
+              <span>0%</span><span>Low</span><span>Moderate</span><span>High</span><span>Very High</span><span>90%</span>
+            </div>
+            <div class="het-zones" id="hetZones">
+              <span class="het-zone low">Low &lt;25%</span>
+              <span class="het-zone mod">Moderate 25–50%</span>
+              <span class="het-zone high">High 50–75%</span>
+              <span class="het-zone vhigh">Very High &gt;75%</span>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Average Study Size <span class="hint">(participants per arm)</span></label>
+            <input type="number" class="form-input" id="avgStudySize" value="150" step="10" min="10" oninput="debouncedSaveState()">
+          </div>
+
+          <div style="margin-top:18px;">
+            <button class="btn btn-primary" onclick="runCalculation()" style="width:100%;">
+              Calculate Required Information Size
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: RESULTS PANEL -->
+      <div>
+        <div class="card" id="resultsCard" style="display:none;">
+          <div class="card-title">Results</div>
+
+          <div id="trafficLight" class="traffic-light green" style="margin-bottom:16px;">
+            <span class="tl-icon" id="tlIcon">●</span>
+            <span id="tlText">Calculating...</span>
+          </div>
+
+          <div class="metric-grid" id="mainMetrics">
+            <!-- filled by JS -->
+          </div>
+
+          <hr class="section-sep">
+
+          <div class="divider-label">Power Bar</div>
+          <div style="font-size:12px; color:var(--text2); margin-bottom:4px;">
+            Current power with <span id="powerNLabel">0</span> participants across <span id="powerKLabel">0</span> studies
+          </div>
+          <div class="power-bar-wrap">
+            <div class="power-bar" id="powerBar" style="width:0%; background:var(--red);"></div>
+          </div>
+          <div style="font-size:13px; font-weight:700; color:var(--accent); margin-bottom:8px;" id="powerPct">—</div>
+
+          <hr class="section-sep">
+
+          <div class="divider-label">Interpretation</div>
+          <div id="interpText" class="info-text" style="margin-top:0;"></div>
+
+          <hr class="section-sep">
+
+          <div class="divider-label">Formula Details</div>
+          <div id="formulaDetails" class="formula-note" style="font-style:normal;"></div>
+        </div>
+
+        <div class="card" id="noResultCard">
+          <div class="card-title">How to Use</div>
+          <p class="info-text">
+            1. Select outcome type (binary or continuous).<br>
+            2. Enter the expected event rates or effect size.<br>
+            3. Set your alpha level, target power, and expected heterogeneity.<br>
+            4. Enter the average size of studies you expect to find.<br>
+            5. Click <strong>Calculate Required Information Size</strong>.<br><br>
+            Use <strong>Power Curves</strong> to explore how results change with different parameters.<br><br>
+            Use <strong>Existing Evidence</strong> if you already have a meta-analysis and want to assess its power.
+          </p>
+          <hr class="section-sep">
+          <div class="card-title">Key Concepts</div>
+          <p class="info-text">
+            <strong>Required Information Size (RIS)</strong>: Minimum total participants needed across all studies for the meta-analysis to be conclusive — analogous to a single adequately-powered trial, adjusted upward for between-study heterogeneity.<br><br>
+            <strong>D² adjustment</strong>: Heterogeneity inflation factor = I²/(1−I²). At I²=50%, RIS doubles. At I²=75%, RIS quadruples.<br><br>
+            <strong>Studies needed (k)</strong>: RIS divided by expected mean study size × 2 (both arms).
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TAB 2: POWER CURVES ===== -->
+<div class="tab-panel" id="tab-curves">
+  <div class="main-content">
+
+    <div class="card chart-controls">
+      <div class="chart-ctrl-group">
+        <label>Effect Size</label>
+        <input type="range" id="ctrlEffect" min="0.1" max="1.0" step="0.05" value="0.3" oninput="updateCurveCtrl('ctrlEffect','ctrlEffectVal'); drawAllCharts()">
+        <span class="slider-val" id="ctrlEffectVal">0.30</span>
+      </div>
+      <div class="chart-ctrl-group">
+        <label>I²</label>
+        <input type="range" id="ctrlI2" min="0" max="90" step="5" value="25" oninput="updateCurveCtrl('ctrlI2','ctrlI2Val'); drawAllCharts()">
+        <span class="slider-val" id="ctrlI2Val">25%</span>
+      </div>
+      <div class="chart-ctrl-group">
+        <label>Study Size (per arm)</label>
+        <input type="range" id="ctrlStudyN" min="20" max="500" step="10" value="150" oninput="updateCurveCtrl('ctrlStudyN','ctrlStudyNVal'); drawAllCharts()">
+        <span class="slider-val" id="ctrlStudyNVal">150</span>
+      </div>
+      <div class="chart-ctrl-group">
+        <label>Alpha</label>
+        <select id="ctrlAlpha" onchange="drawAllCharts()" style="padding:4px 8px; border:1px solid var(--border); border-radius:4px; background:var(--bg); color:var(--text); font-size:12px;">
+          <option value="0.05" selected>0.05</option>
+          <option value="0.025">0.025</option>
+          <option value="0.01">0.01</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="charts-grid">
+      <div class="chart-container">
+        <div class="chart-title">Chart 1 — Power vs Number of Studies (k)</div>
+        <canvas id="chartPowerK" width="480" height="280"></canvas>
+      </div>
+      <div class="chart-container">
+        <div class="chart-title">Chart 2 — Power vs Total Sample Size (N)</div>
+        <canvas id="chartPowerN" width="480" height="280"></canvas>
+      </div>
+      <div class="chart-container">
+        <div class="chart-title">Chart 3 — Minimum Detectable Effect vs k</div>
+        <canvas id="chartMDE" width="480" height="280"></canvas>
+      </div>
+      <div class="chart-container">
+        <div class="chart-title">Chart 4 — RIS Inflation vs I²</div>
+        <canvas id="chartRISvsI2" width="480" height="280"></canvas>
+      </div>
+    </div>
+
+    <div class="info-text" style="margin-top:16px;">
+      Drag sliders above to update all four charts in real-time. Effect size is Cohen's d (continuous) or arcsine-transformed RD (binary). RIS baseline assumes alpha=selected, power=80%.
+    </div>
+  </div>
+</div>
+
+<!-- ===== TAB 3: EXISTING EVIDENCE ===== -->
+<div class="tab-panel" id="tab-existing">
+  <div class="main-content">
+    <div class="grid-2">
+      <div>
+        <div class="card">
+          <div class="card-title">Current Meta-Analysis Results</div>
+          <p class="info-text" style="margin-bottom:14px;">
+            Enter the results of your existing (or planned interim) meta-analysis to assess current power and additional studies needed.
+          </p>
+          <div class="row-inputs">
+            <div class="form-group">
+              <label class="form-label">Number of Studies (k)</label>
+              <input type="number" class="form-input" id="extK" value="5" min="1" oninput="debouncedSaveState()">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Total Participants (N)</label>
+              <input type="number" class="form-input" id="extN" value="1200" min="1" oninput="debouncedSaveState()">
+            </div>
+          </div>
+          <div class="row-inputs">
+            <div class="form-group">
+              <label class="form-label">Observed Effect (Cohen's d or RD)</label>
+              <input type="number" class="form-input" id="extEffect" value="0.30" step="0.01" oninput="debouncedSaveState()">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Observed I²</label>
+              <input type="number" class="form-input" id="extI2" value="40" min="0" max="99" oninput="debouncedSaveState()">
+            </div>
+          </div>
+          <div class="row-inputs">
+            <div class="form-group">
+              <label class="form-label">Lower 95% CI</label>
+              <input type="number" class="form-input" id="extLCI" value="0.05" step="0.01" oninput="debouncedSaveState()">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Upper 95% CI</label>
+              <input type="number" class="form-input" id="extUCI" value="0.55" step="0.01" oninput="debouncedSaveState()">
+            </div>
+          </div>
+          <div class="row-inputs">
+            <div class="form-group">
+              <label class="form-label">Target Alpha (α)</label>
+              <select class="form-select" id="extAlpha" onchange="debouncedSaveState()">
+                <option value="0.05" selected>0.05</option>
+                <option value="0.025">0.025</option>
+                <option value="0.01">0.01</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Avg Study Size (per arm)</label>
+              <input type="number" class="form-input" id="extAvgN" value="120" min="10" oninput="debouncedSaveState()">
+            </div>
+          </div>
+          <button class="btn btn-primary" onclick="runExistingCheck()" style="width:100%; margin-top:8px;">
+            Assess Current Evidence
+          </button>
+        </div>
+      </div>
+
+      <div>
+        <div class="card" id="existingResultsCard" style="display:none;">
+          <div class="card-title">Evidence Assessment</div>
+          <div id="existingTrafficLight" class="traffic-light green" style="margin-bottom:16px;">
+            <span class="tl-icon" id="etlIcon">●</span>
+            <span id="etlText">...</span>
+          </div>
+          <div class="metric-grid" id="existingMetrics"></div>
+          <hr class="section-sep">
+          <div class="divider-label">Power Bar</div>
+          <div class="power-bar-wrap">
+            <div class="power-bar" id="existingPowerBar" style="width:0%;"></div>
+          </div>
+          <div id="existingPowerPct" style="font-size:13px; font-weight:700; color:var(--accent); margin-bottom:8px;"></div>
+          <hr class="section-sep">
+          <div class="divider-label">Marginal Gain (+1 Study)</div>
+          <div id="marginalGain" class="info-text" style="margin-top:0;"></div>
+          <hr class="section-sep">
+          <div id="existingInterp" class="info-text"></div>
+        </div>
+
+        <div class="card" id="existingNoResultCard">
+          <div class="card-title">About This Tool</div>
+          <p class="info-text">
+            This panel calculates the <strong>post-hoc power</strong> of an existing or planned meta-analysis.<br><br>
+            Enter your current k, N, observed effect, and I². The tool will:<br>
+            • Compute current power vs the Required Information Size<br>
+            • Show additional studies and participants needed<br>
+            • Predict marginal power gain from one additional study<br>
+            • Classify evidence as conclusive (Green), borderline (Yellow), or underpowered (Red)
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== TAB 4: EXPORT ===== -->
+<div class="tab-panel" id="tab-export">
+  <div class="main-content">
+    <div class="grid-2">
+      <div>
+        <div class="card">
+          <div class="card-title">Export Options</div>
+          <div style="display:flex; flex-direction:column; gap:10px;">
+            <button class="btn btn-secondary" onclick="copyTextSummary()">Copy Text Summary</button>
+            <button class="btn btn-secondary" onclick="downloadChartPNG()">Download Power Curve (PNG)</button>
+            <button class="btn btn-secondary" onclick="downloadHTMLReport()">Download Full Report (HTML)</button>
+            <button class="btn btn-secondary" onclick="window.print()">Print / Save as PDF</button>
+          </div>
+          <hr class="section-sep">
+          <div class="card-title">Text Summary</div>
+          <div class="export-area" id="exportTextArea">Run a calculation on Tab 1 first.</div>
+        </div>
+      </div>
+      <div>
+        <div class="card">
+          <div class="card-title">Chart Preview (Power vs k)</div>
+          <canvas id="exportChart" width="480" height="300"></canvas>
+          <div class="info-text" style="margin-top:8px;">
+            Chart updates automatically when you adjust parameters on Tab 2. Download uses PNG export.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+'use strict';
+
+// =====================================================================
+// MATH UTILITIES
+// =====================================================================
+
+function erf(x) {
+  // Abramowitz & Stegun approximation 7.1.26
+  var sign = x < 0 ? -1 : 1;
+  x = Math.abs(x);
+  var t = 1.0 / (1.0 + 0.3275911 * x);
+  var y = 1.0 - (((((1.061405429 * t - 1.453152027) * t) + 1.421413741) * t - 0.284496736) * t + 0.254829592) * t * Math.exp(-x * x);
+  return sign * y;
+}
+
+function normalCDF(x) {
+  return 0.5 * (1 + erf(x / Math.SQRT2));
+}
+
+function normalPPF(p) {
+  // Rational approximation for inverse normal CDF
+  if (p <= 0) return -Infinity;
+  if (p >= 1) return Infinity;
+  var a = [0, -3.969683028665376e+01, 2.209460984245205e+02,
+            -2.759285104469687e+02, 1.383577518672690e+02,
+            -3.066479806614716e+01, 2.506628277459239e+00];
+  var b = [0, -5.447609879822406e+01, 1.615858368580409e+02,
+            -1.556989798598866e+02, 6.680131188771972e+01,
+            -1.328068155288572e+01];
+  var c = [-7.784894002430293e-03, -3.223964580411365e-01,
+            -2.400758277161838e+00, -2.549732539343734e+00,
+             4.374664141464968e+00,  2.938163982698783e+00];
+  var d = [7.784695709041462e-03, 3.224671290700398e-01,
+            2.445134137142996e+00, 3.754408661907416e+00];
+  var plo = 0.02425, phi = 1 - plo;
+  var q, r;
+  if (p < plo) {
+    q = Math.sqrt(-2 * Math.log(p));
+    return (((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) /
+           ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1);
+  } else if (p <= phi) {
+    q = p - 0.5;
+    r = q * q;
+    return (((((a[1]*r+a[2])*r+a[3])*r+a[4])*r+a[5])*r+a[6])*q /
+           (((((b[1]*r+b[2])*r+b[3])*r+b[4])*r+b[5])*r+1);
+  } else {
+    q = Math.sqrt(-2 * Math.log(1 - p));
+    return -(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5]) /
+             ((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1);
+  }
+}
+
+function sampleSizeBinary(p0, p1, alpha, power) {
+  if (p0 === p1) return Infinity;
+  var za = normalPPF(1 - alpha / 2);
+  var zb = normalPPF(power);
+  var n = (za + zb) * (za + zb) * (p0 * (1 - p0) + p1 * (1 - p1)) / ((p0 - p1) * (p0 - p1));
+  return Math.ceil(n);
+}
+
+function sampleSizeContinuous(delta, sigma, alpha, power) {
+  var za = normalPPF(1 - alpha / 2);
+  var zb = normalPPF(power);
+  var n = 2 * (za + zb) * (za + zb) * sigma * sigma / (delta * delta);
+  return Math.ceil(n);
+}
+
+function heterogeneityAdjustment(i2Frac) {
+  // D^2 = I^2 / (1 - I^2); multiply RIS by (1 + D^2)
+  if (i2Frac >= 0.99) return 100;
+  var d2 = i2Frac / (1 - i2Frac);
+  return 1 + d2;
+}
+
+function computePower(N, effectSize, i2Frac, alpha) {
+  // Power = Phi(sqrt(N * effectSize^2 / V) - z_alpha/2)
+  // V = 1 (unit variance assumed for standardised effect); heterogeneity inflates variance
+  var za = normalPPF(1 - alpha / 2);
+  var hetAdj = heterogeneityAdjustment(i2Frac);
+  // Effective N accounting for heterogeneity
+  var Neff = N / hetAdj;
+  var ncp = Math.sqrt(Neff) * effectSize / Math.sqrt(2); // two-arm standardised
+  return normalCDF(ncp - za);
+}
+
+function computeRIS(effectSize, i2Frac, alpha, power) {
+  if (!effectSize || effectSize === 0) return Infinity;
+  var za = normalPPF(1 - alpha / 2);
+  var zb = normalPPF(power);
+  var hetAdj = heterogeneityAdjustment(i2Frac);
+  // Base N for unit-variance standardised effect (two-arm)
+  var n_base = 2 * (za + zb) * (za + zb) / (effectSize * effectSize);
+  return Math.ceil(n_base * hetAdj);
+}
+
+function mde(N, i2Frac, alpha, power) {
+  var za = normalPPF(1 - alpha / 2);
+  var zb = normalPPF(power);
+  var hetAdj = heterogeneityAdjustment(i2Frac);
+  var Neff = N / hetAdj;
+  if (Neff <= 0) return Infinity;
+  return Math.sqrt(2 * (za + zb) * (za + zb) / Neff);
+}
+
+// =====================================================================
+// STATE
+// =====================================================================
+
+var appState = {
+  outcomeType: 'binary',
+  p0: 0.10, p1: 0.07,
+  meanDiff: 0.5, pooledSD: 1.0,
+  alpha: 0.05, power: 0.80,
+  i2: 25,
+  avgStudySize: 150,
+  lastResult: null,
+  lastExistingResult: null
+};
+
+var _saveTimer = null;
+function debouncedSaveState() {
+  if (_saveTimer) clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(saveState, 300);
+}
+
+function saveState() {
+  var s = {
+    outcomeType: appState.outcomeType,
+    p0: parseFloat(document.getElementById('p0').value) || 0.10,
+    p1: parseFloat(document.getElementById('p1').value) || 0.07,
+    meanDiff: parseFloat(document.getElementById('meanDiff').value) || 0.5,
+    pooledSD: parseFloat(document.getElementById('pooledSD').value) || 1.0,
+    alpha: parseFloat(document.getElementById('alphaLevel').value) || 0.05,
+    power: parseFloat(document.getElementById('powerTarget').value) || 0.80,
+    i2: parseInt(document.getElementById('i2Slider').value) || 25,
+    avgStudySize: parseInt(document.getElementById('avgStudySize').value) || 150,
+    extK: document.getElementById('extK').value,
+    extN: document.getElementById('extN').value,
+    extEffect: document.getElementById('extEffect').value,
+    extI2: document.getElementById('extI2').value,
+    extLCI: document.getElementById('extLCI').value,
+    extUCI: document.getElementById('extUCI').value,
+    extAlpha: document.getElementById('extAlpha').value,
+    extAvgN: document.getElementById('extAvgN').value,
+    theme: document.body.getAttribute('data-theme') || 'light'
+  };
+  try { localStorage.setItem('masamplesize_v1', JSON.stringify(s)); } catch(e) {}
+}
+
+function loadState() {
+  try {
+    var raw = localStorage.getItem('masamplesize_v1');
+    if (!raw) return;
+    var s = JSON.parse(raw);
+    setOutcome(s.outcomeType || 'binary');
+    if (s.p0 !== undefined) document.getElementById('p0').value = s.p0;
+    if (s.p1 !== undefined) document.getElementById('p1').value = s.p1;
+    if (s.meanDiff !== undefined) document.getElementById('meanDiff').value = s.meanDiff;
+    if (s.pooledSD !== undefined) document.getElementById('pooledSD').value = s.pooledSD;
+    if (s.alpha !== undefined) document.getElementById('alphaLevel').value = s.alpha;
+    if (s.power !== undefined) document.getElementById('powerTarget').value = s.power;
+    if (s.i2 !== undefined) {
+      document.getElementById('i2Slider').value = s.i2;
+      updateI2Display();
+    }
+    if (s.avgStudySize !== undefined) document.getElementById('avgStudySize').value = s.avgStudySize;
+    if (s.extK !== undefined) document.getElementById('extK').value = s.extK;
+    if (s.extN !== undefined) document.getElementById('extN').value = s.extN;
+    if (s.extEffect !== undefined) document.getElementById('extEffect').value = s.extEffect;
+    if (s.extI2 !== undefined) document.getElementById('extI2').value = s.extI2;
+    if (s.extLCI !== undefined) document.getElementById('extLCI').value = s.extLCI;
+    if (s.extUCI !== undefined) document.getElementById('extUCI').value = s.extUCI;
+    if (s.extAlpha !== undefined) document.getElementById('extAlpha').value = s.extAlpha;
+    if (s.extAvgN !== undefined) document.getElementById('extAvgN').value = s.extAvgN;
+    if (s.theme) {
+      document.body.setAttribute('data-theme', s.theme);
+      document.getElementById('themeToggle').textContent = s.theme === 'dark' ? 'Light Mode' : 'Dark Mode';
+    }
+  } catch(e) {}
+}
+
+// =====================================================================
+// TAB SWITCHING
+// =====================================================================
+
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach(function(b) {
+    b.classList.toggle('active', b.getAttribute('data-tab') === name);
+  });
+  document.querySelectorAll('.tab-panel').forEach(function(p) {
+    p.classList.toggle('active', p.id === 'tab-' + name);
+  });
+  if (name === 'curves') {
+    setTimeout(drawAllCharts, 50);
+  }
+  if (name === 'export') {
+    setTimeout(function() {
+      syncExportChart();
+      updateExportText();
+    }, 50);
+  }
+}
+
+// =====================================================================
+// THEME
+// =====================================================================
+
+function toggleTheme() {
+  var current = document.body.getAttribute('data-theme');
+  var next = current === 'dark' ? 'light' : 'dark';
+  document.body.setAttribute('data-theme', next);
+  document.getElementById('themeToggle').textContent = next === 'dark' ? 'Light Mode' : 'Dark Mode';
+  saveState();
+  setTimeout(drawAllCharts, 50);
+}
+
+// =====================================================================
+// OUTCOME TYPE
+// =====================================================================
+
+function setOutcome(type) {
+  appState.outcomeType = type;
+  document.getElementById('btnBinary').classList.toggle('active', type === 'binary');
+  document.getElementById('btnContinuous').classList.toggle('active', type === 'continuous');
+  document.getElementById('binaryInputs').classList.toggle('hidden', type !== 'binary');
+  document.getElementById('continuousInputs').classList.toggle('hidden', type !== 'continuous');
+  saveState();
+}
+
+// =====================================================================
+// I2 DISPLAY
+// =====================================================================
+
+function updateI2Display() {
+  var v = parseInt(document.getElementById('i2Slider').value);
+  document.getElementById('i2Val').textContent = v + '%';
+  // Update zone highlights
+  var zones = document.querySelectorAll('.het-zone');
+  zones.forEach(function(z) { z.style.opacity = '0.5'; });
+  if (v < 25) zones[0].style.opacity = '1';
+  else if (v < 50) zones[1].style.opacity = '1';
+  else if (v < 75) zones[2].style.opacity = '1';
+  else zones[3].style.opacity = '1';
+}
+
+// =====================================================================
+// MAIN CALCULATION
+// =====================================================================
+
+function getInputs() {
+  var p0 = parseFloat(document.getElementById('p0').value);
+  var p1 = parseFloat(document.getElementById('p1').value);
+  var md = parseFloat(document.getElementById('meanDiff').value);
+  var sd = parseFloat(document.getElementById('pooledSD').value);
+  var alpha = parseFloat(document.getElementById('alphaLevel').value);
+  var power = parseFloat(document.getElementById('powerTarget').value);
+  var i2 = parseInt(document.getElementById('i2Slider').value);
+  var avgN = parseInt(document.getElementById('avgStudySize').value);
+  return { p0: p0, p1: p1, md: md, sd: sd, alpha: alpha, power: power, i2: i2, avgN: avgN };
+}
+
+function runCalculation() {
+  var inp = getInputs();
+  var i2Frac = inp.i2 / 100;
+
+  var nPerArm, effectSize, effectLabel, formulaStr;
+
+  if (appState.outcomeType === 'binary') {
+    if (isNaN(inp.p0) || isNaN(inp.p1) || inp.p0 <= 0 || inp.p1 <= 0 || inp.p0 >= 1 || inp.p1 >= 1) {
+      alert('Please enter valid event rates between 0 and 1.');
+      return;
+    }
+    nPerArm = sampleSizeBinary(inp.p0, inp.p1, inp.alpha, inp.power);
+    // For power curves, use arcsine transformation effect size
+    var rd = Math.abs(inp.p1 - inp.p0);
+    // Cohen h for two proportions
+    var h = 2 * Math.asin(Math.sqrt(inp.p1)) - 2 * Math.asin(Math.sqrt(inp.p0));
+    effectSize = Math.abs(h);
+    effectLabel = 'RD = ' + rd.toFixed(3) + '; Cohen h = ' + effectSize.toFixed(3);
+    var rr = (inp.p1 / inp.p0).toFixed(3);
+    formulaStr = 'n/arm = (z\u03B1/2 + z\u03B2)\u00B2 \u00D7 [p\u2080(1\u2212p\u2080) + p\u2081(1\u2212p\u2081)] / (p\u2080\u2212p\u2081)\u00B2\n'
+      + 'p\u2080=' + inp.p0 + ', p\u2081=' + inp.p1 + ', RR=' + rr;
+  } else {
+    if (isNaN(inp.md) || isNaN(inp.sd) || inp.sd <= 0) {
+      alert('Please enter valid mean difference and SD (SD must be > 0).');
+      return;
+    }
+    nPerArm = sampleSizeContinuous(inp.md, inp.sd, inp.alpha, inp.power);
+    effectSize = Math.abs(inp.md / inp.sd); // Cohen's d
+    effectLabel = 'Cohen\u2019s d = ' + effectSize.toFixed(3);
+    formulaStr = 'n/arm = 2(z\u03B1/2 + z\u03B2)\u00B2 \u00D7 \u03C3\u00B2 / \u03B4\u00B2\n'
+      + '\u03B4=' + inp.md + ', \u03C3=' + inp.sd;
+  }
+
+  var hetAdj = heterogeneityAdjustment(i2Frac);
+  var risPerArm = Math.ceil(nPerArm * hetAdj);
+  var risTotal = risPerArm * 2;
+  var kNeeded = Math.ceil(risTotal / (inp.avgN * 2));
+  var totalN = kNeeded * inp.avgN * 2;
+
+  // Power with planned N
+  var currentPower = computePower(inp.avgN * 2 * kNeeded, effectSize, i2Frac, inp.alpha);
+
+  appState.lastResult = {
+    nPerArm: nPerArm,
+    risPerArm: risPerArm,
+    risTotal: risTotal,
+    kNeeded: kNeeded,
+    totalN: totalN,
+    effectSize: effectSize,
+    effectLabel: effectLabel,
+    i2Frac: i2Frac,
+    alpha: inp.alpha,
+    power: inp.power,
+    hetAdj: hetAdj,
+    formulaStr: formulaStr,
+    currentPower: currentPower,
+    avgN: inp.avgN
+  };
+
+  renderResults(appState.lastResult);
+  updateExportText();
+}
+
+function renderResults(r) {
+  document.getElementById('noResultCard').style.display = 'none';
+  document.getElementById('resultsCard').style.display = 'block';
+
+  // Traffic light
+  var powerNeeded = r.power;
+  var tl = document.getElementById('trafficLight');
+  var tlIcon = document.getElementById('tlIcon');
+  var tlText = document.getElementById('tlText');
+
+  // Classify based on ratio of current RIS to required RIS
+  var ratio = r.totalN / r.risTotal;
+  var light, icon, text;
+  if (ratio >= 1.0) {
+    light = 'green'; icon = '\u25CF'; text = 'Adequately Powered — Meta-analysis will be conclusive';
+  } else if (ratio >= 0.5) {
+    light = 'yellow'; icon = '\u25CF'; text = 'Borderline — Additional studies recommended';
+  } else {
+    light = 'red'; icon = '\u25CF'; text = 'Underpowered — Substantially more evidence needed';
+  }
+  tl.className = 'traffic-light ' + light;
+  tlIcon.textContent = icon;
+  tlText.textContent = text;
+
+  // Metrics
+  var mg = document.getElementById('mainMetrics');
+  mg.innerHTML = makeMetric(r.risTotal, '', 'Required Information Size', 'total participants') +
+    makeMetric(r.kNeeded, '', 'Studies Needed', 'at avg ' + (r.avgN * 2) + ' participants') +
+    makeMetric(r.totalN, '', 'Planned Total N', 'with ' + r.kNeeded + ' studies') +
+    makeMetric((r.hetAdj).toFixed(2), '\u00D7', 'RIS Inflation', 'I\u00B2=' + (r.i2Frac * 100).toFixed(0) + '%');
+
+  // Power bar
+  var pct = Math.min(100, r.currentPower * 100);
+  var pb = document.getElementById('powerBar');
+  pb.style.width = pct.toFixed(1) + '%';
+  pb.style.background = r.currentPower >= 0.8 ? 'var(--green)' : r.currentPower >= 0.5 ? 'var(--yellow)' : 'var(--red)';
+  document.getElementById('powerPct').textContent = (r.currentPower * 100).toFixed(1) + '% power';
+  document.getElementById('powerNLabel').textContent = r.totalN.toLocaleString();
+  document.getElementById('powerKLabel').textContent = r.kNeeded;
+
+  // Interpretation
+  var d2 = (r.i2Frac / (1 - r.i2Frac));
+  var interpLines = [
+    'Effect size (' + r.effectLabel + ') requires <strong>' + r.nPerArm + ' participants per arm</strong> in a single trial (alpha=' + r.alpha + ', power=' + (r.power * 100) + '%).',
+    'With I\u00B2=' + (r.i2Frac * 100).toFixed(0) + '%, D\u00B2=' + d2.toFixed(2) + ', the Required Information Size is inflated by ' + r.hetAdj.toFixed(2) + '\u00D7 to <strong>' + r.risTotal.toLocaleString() + ' participants</strong> total.',
+    'You need approximately <strong>' + r.kNeeded + ' studies</strong> averaging ' + (r.avgN * 2) + ' participants each.',
+    'The planned meta-analysis will have <strong>' + (r.currentPower * 100).toFixed(1) + '% power</strong> to detect this effect.'
+  ];
+  document.getElementById('interpText').innerHTML = interpLines.join('<br><br>');
+
+  // Formula
+  document.getElementById('formulaDetails').innerHTML =
+    '<strong>Sample size formula:</strong> ' + r.formulaStr.replace(/\n/g, '<br>') + '<br>' +
+    '<strong>RIS = n/arm \u00D7 (1 + D\u00B2) \u00D7 2</strong><br>' +
+    'k = ceil(RIS / (avg_study_size \u00D7 2))';
+}
+
+function makeMetric(val, unit, label, sub) {
+  return '<div class="metric-card">' +
+    '<div class="metric-value">' + (typeof val === 'number' ? val.toLocaleString() : val) + '<span style="font-size:14px;">' + unit + '</span></div>' +
+    '<div class="metric-unit">' + sub + '</div>' +
+    '<div class="metric-label">' + label + '</div>' +
+    '</div>';
+}
+
+// =====================================================================
+// EXISTING EVIDENCE CHECK
+// =====================================================================
+
+function runExistingCheck() {
+  var k = parseInt(document.getElementById('extK').value);
+  var N = parseInt(document.getElementById('extN').value);
+  var effect = parseFloat(document.getElementById('extEffect').value);
+  var i2 = parseFloat(document.getElementById('extI2').value);
+  var lci = parseFloat(document.getElementById('extLCI').value);
+  var uci = parseFloat(document.getElementById('extUCI').value);
+  var alpha = parseFloat(document.getElementById('extAlpha').value);
+  var avgN = parseInt(document.getElementById('extAvgN').value);
+
+  if (isNaN(k) || isNaN(N) || isNaN(effect) || isNaN(i2)) {
+    alert('Please fill in all required fields.');
+    return;
+  }
+
+  var i2Frac = i2 / 100;
+  var ris = computeRIS(Math.abs(effect), i2Frac, alpha, 0.80);
+  var currentPower = computePower(N, Math.abs(effect), i2Frac, alpha);
+
+  // Additional studies needed
+  var additionalN = Math.max(0, ris - N);
+  var additionalK = Math.ceil(additionalN / (avgN * 2));
+
+  // Marginal gain: +1 study
+  var newN = N + avgN * 2;
+  var powerPlus1 = computePower(newN, Math.abs(effect), i2Frac, alpha);
+  var marginalGain = powerPlus1 - currentPower;
+
+  // Classify
+  var ratio = N / ris;
+  var light, icon, text;
+  if (ratio >= 1.0) {
+    light = 'green'; icon = '\u25CF'; text = 'Conclusive — Current evidence is adequately powered';
+  } else if (ratio >= 0.5) {
+    light = 'yellow'; icon = '\u25CF'; text = 'Borderline — Nearing the required information size';
+  } else {
+    light = 'red'; icon = '\u25CF'; text = 'Underpowered — Substantial additional evidence needed';
+  }
+
+  document.getElementById('existingNoResultCard').style.display = 'none';
+  document.getElementById('existingResultsCard').style.display = 'block';
+
+  var etl = document.getElementById('existingTrafficLight');
+  etl.className = 'traffic-light ' + light;
+  document.getElementById('etlIcon').textContent = icon;
+  document.getElementById('etlText').textContent = text;
+
+  var mg = document.getElementById('existingMetrics');
+  mg.innerHTML =
+    makeMetric((currentPower * 100).toFixed(1), '%', 'Current Power', 'vs RIS') +
+    makeMetric(ris.toLocaleString(), '', 'Required Info Size', 'participants needed') +
+    makeMetric(additionalN > 0 ? additionalN.toLocaleString() : '0', '', 'Additional N Needed', 'to reach RIS') +
+    makeMetric(additionalK > 0 ? additionalK : '0', '', 'Additional Studies', 'at ' + (avgN*2) + '/study');
+
+  var pct = Math.min(100, currentPower * 100);
+  var pb = document.getElementById('existingPowerBar');
+  pb.style.width = pct.toFixed(1) + '%';
+  pb.style.background = currentPower >= 0.8 ? 'var(--green)' : currentPower >= 0.5 ? 'var(--yellow)' : 'var(--red)';
+  document.getElementById('existingPowerPct').textContent = (currentPower * 100).toFixed(1) + '% current power';
+
+  document.getElementById('marginalGain').innerHTML =
+    'Adding 1 study (' + (avgN * 2) + ' participants): power increases by <strong>' + (marginalGain * 100).toFixed(1) + ' percentage points</strong> ' +
+    '(' + (currentPower * 100).toFixed(1) + '% \u2192 ' + (powerPlus1 * 100).toFixed(1) + '%).';
+
+  var interpLines = [
+    'Current evidence: <strong>' + k + ' studies, ' + N.toLocaleString() + ' participants</strong>, I\u00B2=' + i2 + '%.',
+    'Observed effect (' + Math.abs(effect).toFixed(2) + ') requires a RIS of <strong>' + ris.toLocaleString() + ' participants</strong>.',
+    'Current evidence represents <strong>' + (ratio * 100).toFixed(1) + '% of RIS</strong>.',
+    additionalK > 0
+      ? 'To reach RIS: approximately <strong>' + additionalK + ' additional studies</strong> (' + additionalN.toLocaleString() + ' participants) needed.'
+      : 'The RIS has been met or exceeded. No additional studies strictly required.'
+  ];
+  document.getElementById('existingInterp').innerHTML = interpLines.join('<br><br>');
+
+  appState.lastExistingResult = {
+    k: k, N: N, effect: effect, i2: i2, alpha: alpha, avgN: avgN,
+    ris: ris, currentPower: currentPower, additionalN: additionalN, additionalK: additionalK,
+    light: light
+  };
+  updateExportText();
+}
+
+// =====================================================================
+// EXAMPLES
+// =====================================================================
+
+var EXAMPLES = {
+  statin: {
+    outcomeType: 'binary',
+    p0: 0.12, p1: 0.08, alpha: 0.05, power: 0.80, i2: 20, avgStudySize: 3000,
+    label: 'Statin Mortality (expected GREEN)',
+    note: 'Large trials, moderate effect, low heterogeneity'
+  },
+  anticoag: {
+    outcomeType: 'binary',
+    p0: 0.03, p1: 0.02, alpha: 0.05, power: 0.80, i2: 40, avgStudySize: 200,
+    label: 'Novel Anticoagulant Bleeding (expected RED)',
+    note: 'Rare outcome, few small trials, moderate heterogeneity'
+  },
+  exercise: {
+    outcomeType: 'continuous',
+    meanDiff: 0.45, pooledSD: 1.0, alpha: 0.05, power: 0.80, i2: 60, avgStudySize: 60,
+    label: 'Exercise for Depression (expected YELLOW)',
+    note: 'Moderate effect, high heterogeneity, small trials'
+  }
+};
+
+function loadExample(name) {
+  var ex = EXAMPLES[name];
+  if (!ex) return;
+  setOutcome(ex.outcomeType);
+  if (ex.outcomeType === 'binary') {
+    document.getElementById('p0').value = ex.p0;
+    document.getElementById('p1').value = ex.p1;
+  } else {
+    document.getElementById('meanDiff').value = ex.meanDiff;
+    document.getElementById('pooledSD').value = ex.pooledSD;
+  }
+  document.getElementById('alphaLevel').value = ex.alpha;
+  document.getElementById('powerTarget').value = ex.power;
+  document.getElementById('i2Slider').value = ex.i2;
+  updateI2Display();
+  document.getElementById('avgStudySize').value = ex.avgStudySize;
+  saveState();
+  runCalculation();
+}
+
+// =====================================================================
+// CHART RENDERING
+// =====================================================================
+
+function getCSSVar(name) {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+
+function getChartColors() {
+  var dark = document.body.getAttribute('data-theme') === 'dark';
+  return {
+    grid: dark ? '#2d3f5a' : '#e5e7eb',
+    text: dark ? '#a0aec0' : '#6b7280',
+    accent: dark ? '#3b82f6' : '#2563eb',
+    accent2: dark ? '#22c55e' : '#16a34a',
+    accent3: dark ? '#eab308' : '#ca8a04',
+    accent4: dark ? '#ef4444' : '#dc2626',
+    bg: dark ? '#1a2336' : '#ffffff'
+  };
+}
+
+function drawChart(canvasId, xLabel, yLabel, datasets, xMin, xMax, yMin, yMax, xTicks, yTicks, extraDraw) {
+  var canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  var dpr = window.devicePixelRatio || 1;
+  var cw = canvas.offsetWidth || 480;
+  var ch = canvas.offsetHeight || 280;
+  canvas.width = cw * dpr;
+  canvas.height = ch * dpr;
+  var ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+
+  var pad = { top: 14, right: 20, bottom: 40, left: 54 };
+  var W = cw - pad.left - pad.right;
+  var H = ch - pad.top - pad.bottom;
+
+  var colors = getChartColors();
+
+  ctx.fillStyle = colors.bg;
+  ctx.fillRect(0, 0, cw, ch);
+
+  function toX(v) { return pad.left + (v - xMin) / (xMax - xMin) * W; }
+  function toY(v) { return pad.top + (1 - (v - yMin) / (yMax - yMin)) * H; }
+
+  // Grid
+  ctx.strokeStyle = colors.grid;
+  ctx.lineWidth = 0.5;
+  for (var i = 0; i <= yTicks; i++) {
+    var yv = yMin + (yMax - yMin) * i / yTicks;
+    var ypx = toY(yv);
+    ctx.beginPath(); ctx.moveTo(pad.left, ypx); ctx.lineTo(pad.left + W, ypx); ctx.stroke();
+    ctx.fillStyle = colors.text;
+    ctx.font = '10px sans-serif';
+    ctx.textAlign = 'right';
+    ctx.fillText(yv.toFixed(yv < 1 && yv > 0 ? 2 : 0), pad.left - 5, ypx + 3.5);
+  }
+  for (var j = 0; j <= xTicks; j++) {
+    var xv = xMin + (xMax - xMin) * j / xTicks;
+    var xpx = toX(xv);
+    ctx.beginPath(); ctx.moveTo(xpx, pad.top); ctx.lineTo(xpx, pad.top + H); ctx.stroke();
+    ctx.fillStyle = colors.text;
+    ctx.font = '10px sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(Math.round(xv * 10) / 10, xpx, pad.top + H + 14);
+  }
+
+  // Axes
+  ctx.strokeStyle = colors.text;
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.moveTo(pad.left, pad.top);
+  ctx.lineTo(pad.left, pad.top + H);
+  ctx.lineTo(pad.left + W, pad.top + H);
+  ctx.stroke();
+
+  // Labels
+  ctx.fillStyle = colors.text;
+  ctx.font = '11px sans-serif';
+  ctx.textAlign = 'center';
+  ctx.fillText(xLabel, pad.left + W / 2, ch - 4);
+
+  ctx.save();
+  ctx.translate(12, pad.top + H / 2);
+  ctx.rotate(-Math.PI / 2);
+  ctx.fillText(yLabel, 0, 0);
+  ctx.restore();
+
+  // Extra drawing (like reference lines)
+  if (extraDraw) extraDraw(ctx, toX, toY, colors);
+
+  // Datasets
+  datasets.forEach(function(ds) {
+    if (!ds.data || ds.data.length < 2) return;
+    ctx.strokeStyle = ds.color;
+    ctx.lineWidth = ds.lineWidth || 2;
+    if (ds.dashed) ctx.setLineDash([5, 3]);
+    else ctx.setLineDash([]);
+    ctx.beginPath();
+    ds.data.forEach(function(pt, idx) {
+      var px = toX(pt[0]);
+      var py = toY(Math.max(yMin, Math.min(yMax, pt[1])));
+      if (idx === 0) ctx.moveTo(px, py);
+      else ctx.lineTo(px, py);
+    });
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    // Label at end
+    if (ds.label) {
+      var last = ds.data[ds.data.length - 1];
+      ctx.fillStyle = ds.color;
+      ctx.font = '10px sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText(ds.label, toX(last[0]) + 4, toY(Math.max(yMin, Math.min(yMax, last[1]))) + 3);
+    }
+  });
+
+  canvas._toX = toX; canvas._toY = toY; canvas._pad = pad;
+  canvas._xMin = xMin; canvas._xMax = xMax; canvas._yMin = yMin; canvas._yMax = yMax;
+}
+
+function getCurveParams() {
+  var effect = parseFloat(document.getElementById('ctrlEffect').value) || 0.3;
+  var i2 = parseInt(document.getElementById('ctrlI2').value) || 25;
+  var studyN = parseInt(document.getElementById('ctrlStudyN').value) || 150;
+  var alpha = parseFloat(document.getElementById('ctrlAlpha').value) || 0.05;
+  return { effect: effect, i2Frac: i2 / 100, studyN: studyN, alpha: alpha };
+}
+
+function updateCurveCtrl(sliderId, valId) {
+  var v = document.getElementById(sliderId).value;
+  var el = document.getElementById(valId);
+  if (sliderId === 'ctrlI2') el.textContent = v + '%';
+  else if (sliderId === 'ctrlStudyN') el.textContent = v;
+  else el.textContent = parseFloat(v).toFixed(2);
+}
+
+function drawAllCharts() {
+  var p = getCurveParams();
+  var colors = getChartColors();
+
+  // Chart 1: Power vs k
+  var data1 = [];
+  for (var k = 1; k <= 40; k++) {
+    var N = k * p.studyN * 2;
+    data1.push([k, computePower(N, p.effect, p.i2Frac, p.alpha)]);
+  }
+  drawChart('chartPowerK', 'Number of Studies (k)', 'Power',
+    [{ data: data1, color: colors.accent, label: '' }],
+    1, 40, 0, 1, 8, 5,
+    function(ctx, toX, toY, c) {
+      // 80% power reference line
+      ctx.strokeStyle = c.accent2;
+      ctx.lineWidth = 1;
+      ctx.setLineDash([6, 3]);
+      ctx.beginPath();
+      ctx.moveTo(toX(1), toY(0.80));
+      ctx.lineTo(toX(40), toY(0.80));
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = c.accent2;
+      ctx.font = '10px sans-serif';
+      ctx.textAlign = 'left';
+      ctx.fillText('80%', toX(1) + 3, toY(0.80) - 3);
+    }
+  );
+
+  // Chart 2: Power vs Total N
+  var data2 = [];
+  var maxN = p.studyN * 2 * 40;
+  for (var ni = 0; ni <= 50; ni++) {
+    var Nv = (ni / 50) * maxN;
+    if (Nv === 0) Nv = 1;
+    data2.push([Nv, computePower(Nv, p.effect, p.i2Frac, p.alpha)]);
+  }
+  drawChart('chartPowerN', 'Total N', 'Power',
+    [{ data: data2, color: colors.accent, label: '' }],
+    0, maxN, 0, 1, 5, 5,
+    function(ctx, toX, toY, c) {
+      ctx.strokeStyle = c.accent2;
+      ctx.lineWidth = 1;
+      ctx.setLineDash([6, 3]);
+      ctx.beginPath();
+      ctx.moveTo(toX(0), toY(0.80));
+      ctx.lineTo(toX(maxN), toY(0.80));
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+  );
+
+  // Chart 3: MDE vs k
+  var data3a = [], data3b = [], data3c = [];
+  for (var kk = 1; kk <= 40; kk++) {
+    var Nk = kk * p.studyN * 2;
+    data3a.push([kk, mde(Nk, 0, p.alpha, 0.80)]);           // no heterogeneity
+    data3b.push([kk, mde(Nk, p.i2Frac, p.alpha, 0.80)]);    // current I^2
+    data3c.push([kk, mde(Nk, Math.min(0.75, p.i2Frac + 0.25), p.alpha, 0.80)]); // I^2+25%
+  }
+  var mdeMax = Math.min(3, data3a[0][1] * 1.1);
+  drawChart('chartMDE', 'Number of Studies (k)', 'Min Detectable Effect',
+    [
+      { data: data3a, color: colors.accent2, label: 'I\u00B2=0%' },
+      { data: data3b, color: colors.accent, label: 'I\u00B2=' + (p.i2Frac * 100).toFixed(0) + '%' },
+      { data: data3c, color: colors.accent4, label: 'I\u00B2+25%' }
+    ],
+    1, 40, 0, mdeMax, 8, 5, null
+  );
+
+  // Chart 4: RIS vs I2
+  var data4 = [];
+  for (var ii = 0; ii <= 18; ii++) {
+    var i2v = ii * 5;
+    var i2f = i2v / 100;
+    var ris = computeRIS(p.effect, i2f, p.alpha, 0.80);
+    data4.push([i2v, ris]);
+  }
+  var risMax = data4[data4.length - 1][1];
+  drawChart('chartRISvsI2', 'I\u00B2 (%)', 'Required Information Size',
+    [{ data: data4, color: colors.accent4, label: '' }],
+    0, 90, 0, risMax * 1.05, 6, 5,
+    function(ctx, toX, toY, c) {
+      // Mark current I2
+      ctx.strokeStyle = c.accent;
+      ctx.lineWidth = 1;
+      ctx.setLineDash([4, 3]);
+      var ci2 = p.i2Frac * 100;
+      ctx.beginPath();
+      ctx.moveTo(toX(ci2), toY(0));
+      ctx.lineTo(toX(ci2), toY(computeRIS(p.effect, p.i2Frac, p.alpha, 0.80)));
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+  );
+
+  // Also update export chart
+  syncExportChart();
+}
+
+function syncExportChart() {
+  // Mirror chart 1 to export canvas
+  var p = getCurveParams();
+  var colors = getChartColors();
+  var data = [];
+  for (var k = 1; k <= 40; k++) {
+    var N = k * p.studyN * 2;
+    data.push([k, computePower(N, p.effect, p.i2Frac, p.alpha)]);
+  }
+  drawChart('exportChart', 'Number of Studies (k)', 'Power',
+    [{ data: data, color: colors.accent, label: '' }],
+    1, 40, 0, 1, 8, 5,
+    function(ctx, toX, toY, c) {
+      ctx.strokeStyle = c.accent2;
+      ctx.lineWidth = 1;
+      ctx.setLineDash([6, 3]);
+      ctx.beginPath();
+      ctx.moveTo(toX(1), toY(0.80));
+      ctx.lineTo(toX(40), toY(0.80));
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+  );
+}
+
+// Tooltip for charts
+function setupChartTooltip(canvasId, xLabel, yLabel, getData) {
+  var canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  var tooltip = document.getElementById('globalTooltip');
+  canvas.addEventListener('mousemove', function(e) {
+    if (!canvas._toX) return;
+    var rect = canvas.getBoundingClientRect();
+    var mx = e.clientX - rect.left;
+    var my = e.clientY - rect.top;
+    var pad = canvas._pad;
+    var W = rect.width - pad.left - pad.right;
+    var xFrac = (mx - pad.left) / W;
+    if (xFrac < 0 || xFrac > 1) { tooltip.style.display = 'none'; return; }
+    var xVal = canvas._xMin + xFrac * (canvas._xMax - canvas._xMin);
+    var data = getData();
+    // Find closest point
+    var best = null, bestDist = Infinity;
+    data.forEach(function(pt) {
+      var d = Math.abs(pt[0] - xVal);
+      if (d < bestDist) { bestDist = d; best = pt; }
+    });
+    if (!best) { tooltip.style.display = 'none'; return; }
+    tooltip.style.display = 'block';
+    tooltip.style.left = (e.clientX + 12) + 'px';
+    tooltip.style.top = (e.clientY - 10) + 'px';
+    tooltip.textContent = xLabel + ': ' + (Math.round(best[0] * 10) / 10) + '  |  ' + yLabel + ': ' + (best[1] < 1.5 ? (best[1] * 100).toFixed(1) + '%' : Math.round(best[1]).toLocaleString());
+  });
+  canvas.addEventListener('mouseleave', function() {
+    tooltip.style.display = 'none';
+  });
+  window.addEventListener('scroll', function() {
+    tooltip.style.display = 'none';
+  }, { passive: true });
+}
+
+// =====================================================================
+// EXPORT
+// =====================================================================
+
+function updateExportText() {
+  var lines = [];
+  lines.push('MA SAMPLE SIZE CALCULATOR — RESULTS REPORT');
+  lines.push('Generated: ' + new Date().toLocaleString());
+  lines.push('='.repeat(55));
+
+  if (appState.lastResult) {
+    var r = appState.lastResult;
+    lines.push('\n[TAB 1 — STUDY PARAMETERS]\n');
+    lines.push('Outcome type:              ' + appState.outcomeType);
+    lines.push('Effect size:               ' + r.effectLabel);
+    lines.push('Alpha (two-sided):         ' + r.alpha);
+    lines.push('Target power:              ' + (r.power * 100) + '%');
+    lines.push('Expected I\u00B2:               ' + (r.i2Frac * 100).toFixed(0) + '%');
+    lines.push('Heterogeneity inflation:   ' + r.hetAdj.toFixed(3) + '\u00D7 (D\u00B2 = ' + (r.i2Frac / (1 - r.i2Frac)).toFixed(3) + ')');
+    lines.push('Average study size:        ' + (r.avgN * 2) + ' participants');
+    lines.push('\n--- Results ---');
+    lines.push('Single-trial n/arm:        ' + r.nPerArm);
+    lines.push('RIS per arm:               ' + r.risPerArm.toLocaleString());
+    lines.push('RIS total:                 ' + r.risTotal.toLocaleString());
+    lines.push('Studies needed (k):        ' + r.kNeeded);
+    lines.push('Planned total N:           ' + r.totalN.toLocaleString());
+    lines.push('Achieved power:            ' + (r.currentPower * 100).toFixed(1) + '%');
+  }
+
+  if (appState.lastExistingResult) {
+    var ex = appState.lastExistingResult;
+    lines.push('\n[TAB 3 — EXISTING EVIDENCE]\n');
+    lines.push('Current studies (k):       ' + ex.k);
+    lines.push('Current participants (N):  ' + ex.N.toLocaleString());
+    lines.push('Observed effect:           ' + ex.effect);
+    lines.push('Observed I\u00B2:               ' + ex.i2 + '%');
+    lines.push('Required Info Size (RIS):  ' + ex.ris.toLocaleString());
+    lines.push('Current power:             ' + (ex.currentPower * 100).toFixed(1) + '%');
+    lines.push('Additional N needed:       ' + (ex.additionalN > 0 ? ex.additionalN.toLocaleString() : '0 (RIS met)'));
+    lines.push('Additional studies needed: ' + (ex.additionalK > 0 ? ex.additionalK : '0 (RIS met)'));
+    lines.push('Verdict:                   ' + ex.light.toUpperCase());
+  }
+
+  lines.push('\n' + '='.repeat(55));
+  lines.push('Formula: RIS = n_trial \u00D7 (1 + D\u00B2) where D\u00B2 = I\u00B2/(1\u2212I\u00B2)');
+  lines.push('Power: \u03A6(\u221A(N_eff) \u00D7 d/\u221A2 \u2212 z_\u03B1/2) where N_eff = N/(1+D\u00B2)');
+
+  document.getElementById('exportTextArea').textContent = lines.join('\n');
+}
+
+function copyTextSummary() {
+  var text = document.getElementById('exportTextArea').textContent;
+  navigator.clipboard.writeText(text).then(function() {
+    alert('Summary copied to clipboard!');
+  }).catch(function() {
+    var ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    alert('Summary copied to clipboard!');
+  });
+}
+
+function downloadChartPNG() {
+  var canvas = document.getElementById('exportChart');
+  var url = canvas.toDataURL('image/png');
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'ma-power-curve.png';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  // toDataURL returns a data: URI, not a blob URL — no revokeObjectURL needed
+}
+
+function downloadHTMLReport() {
+  var text = document.getElementById('exportTextArea').textContent;
+  var canvas = document.getElementById('exportChart');
+  var imgData = canvas.toDataURL('image/png');
+  var html = '<!DOCTYPE html><html><head><meta charset="UTF-8"><title>MA Sample Size Report</title>'
+    + '<style>body{font-family:sans-serif;max-width:800px;margin:40px auto;padding:20px}'
+    + 'pre{background:#f5f5f5;padding:16px;border-radius:6px;font-size:13px;white-space:pre-wrap}'
+    + 'img{max-width:100%;border:1px solid #ddd;border-radius:6px;margin-top:16px}'
+    + 'h1{font-size:20px;color:#1a2332}h2{font-size:15px;color:#4a5568}'
+    + '</style></head><body>'
+    + '<h1>MA Sample Size Calculator — Report</h1>'
+    + '<h2>Generated: ' + new Date().toLocaleString() + '</h2>'
+    + '<pre>' + text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;') + '</pre>'
+    + '<img src="' + imgData + '" alt="Power curve chart">'
+    + '</body></html>';
+  var blob = new Blob([html], { type: 'text/html' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'ma-sample-size-report.html';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(function() { URL.revokeObjectURL(url); }, 5000);
+}
+
+// =====================================================================
+// INIT
+// =====================================================================
+
+function init() {
+  loadState();
+  updateI2Display();
+
+  // Setup curve control labels
+  updateCurveCtrl('ctrlEffect', 'ctrlEffectVal');
+  updateCurveCtrl('ctrlI2', 'ctrlI2Val');
+  updateCurveCtrl('ctrlStudyN', 'ctrlStudyNVal');
+
+  // Tooltip setup for charts
+  setupChartTooltip('chartPowerK', 'k', 'Power', function() {
+    var p = getCurveParams();
+    var d = [];
+    for (var k = 1; k <= 40; k++) { d.push([k, computePower(k * p.studyN * 2, p.effect, p.i2Frac, p.alpha)]); }
+    return d;
+  });
+  setupChartTooltip('chartPowerN', 'N', 'Power', function() {
+    var p = getCurveParams();
+    var maxN = p.studyN * 2 * 40;
+    var d = [];
+    for (var i = 0; i <= 50; i++) { var N = Math.max(1, (i/50)*maxN); d.push([N, computePower(N, p.effect, p.i2Frac, p.alpha)]); }
+    return d;
+  });
+  setupChartTooltip('chartMDE', 'k', 'MDE', function() {
+    var p = getCurveParams();
+    var d = [];
+    for (var k = 1; k <= 40; k++) { d.push([k, mde(k * p.studyN * 2, p.i2Frac, p.alpha, 0.80)]); }
+    return d;
+  });
+  setupChartTooltip('chartRISvsI2', 'I\u00B2%', 'RIS', function() {
+    var p = getCurveParams();
+    var d = [];
+    for (var i = 0; i <= 18; i++) { var iv = i*5; d.push([iv, computeRIS(p.effect, iv/100, p.alpha, 0.80)]); }
+    return d;
+  });
+
+  // Run initial calculation with defaults
+  runCalculation();
+}
+
+setTimeout(init, 50);
+</script>
+</body>
+</html>
