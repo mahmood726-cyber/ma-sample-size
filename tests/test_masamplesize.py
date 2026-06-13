@@ -4,7 +4,7 @@ Tests core math functions, UI interactions, examples, existing evidence check,
 tab switching, and export functionality.
 """
 import sys, io, os, unittest, time, math
-if not hasattr(sys.stdout, '_pytest_capture'):
+if 'pytest' not in sys.modules:
     try:
         sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
     except Exception:
@@ -13,7 +13,9 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 
-HTML = 'file:///' + os.path.abspath(r'C:\Models\MASampleSize\ma-sample-size.html').replace('\\', '/')
+# Resolve the app HTML relative to this test file so the suite runs from a fresh clone.
+_HTML_PATH = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), 'ma-sample-size.html')
+HTML = 'file:///' + _HTML_PATH.replace('\\', '/')
 
 
 class TestMASampleSize(unittest.TestCase):
